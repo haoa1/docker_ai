@@ -17,11 +17,6 @@ services:
       - TZ=Asia/Shanghai
       - LANG=C.UTF-8
       - PYTHONPATH=/workspace
-      # 代理配置（请务必检查并修正其中的错误IP）
-      - HTTP_PROXY=http://10.31.13.48:7890
-      - HTTPS_PROXY=http://192.168.0.:1167890  # 注意：这个IP地址格式不正确，请修正
-      - http_proxy=http://10.31.13.48:7890
-      - https_proxy=http://10.31.13.48:7890
     stdin_open: true
     tty: true
     restart: unless-stopped

@@ -5,32 +5,27 @@ services:
     build: .
     image: python-dev:3.12
     container_name: 3.12-slim_compose
+    # 关键修改：使用 host 网络模式
+    network_mode: "host"
     volumes:
-      - ./:/workspace
-      - ~/.ssh:/home/devuser/.ssh:ro  # 挂载 SSH 密钥（只读）
-      - ~/.gitconfig:/home/devuser/.gitconfig:ro  # 挂载 git 配置
-      - python-dev-data:/data  # 持久化数据卷
+      - /work/workspace/:/workspace
+      - ~/.ssh:/home/devuser/.ssh:ro
+      - ~/.gitconfig:/home/devuser/.gitconfig:ro
+      - python-dev-data:/data
     working_dir: /workspace
     environment:
       - TZ=Asia/Shanghai
       - LANG=C.UTF-8
       - PYTHONPATH=/workspace
-      # 系统代理
-      - HTTP_PROXY=http://192.168.0.116:7890
-      - HTTPS_PROXY=http://192.168.0.:1167890
-      - http_proxy=http://192.168.0.116:7890
-      - https_proxy=http://192.168.0.116:7890
-    ports:
-      - "8000:8000"  # 示例端口映射
     stdin_open: true
     tty: true
     restart: unless-stopped
-    networks:
-      - dev-network
+    # 注意：使用 host 网络模式后，不需要再声明 networks
 
 volumes:
   python-dev-data:
 
-networks:
-  dev-network:
-    driver: bridge
+# 注意：使用 host 网络模式后，顶层的 networks 配置可以删除或保留（但不会被该服务使用）
+# networks:
+#   dev-network:
+#     driver: bridge

@@ -1,5 +1,5 @@
-# 使用官方 Python 3.12 slim 镜像作为基础
-FROM python:3.12-slim
+# 使用官方 Python 3.12 slim 镜像作为基础（使用更可靠的标签）
+FROM python:3.12-slim-bullseye
 
 # 设置环境变量 - 显式覆盖代理设置
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -17,16 +17,16 @@ RUN rm -f /etc/apt/apt.conf.d/proxy.conf && \
     echo 'Acquire::http::Proxy "false";' > /etc/apt/apt.conf.d/99noproxy && \
     echo 'Acquire::https::Proxy "false";' >> /etc/apt/apt.conf.d/99noproxy
 
-# 使用国内镜像源加速下载（清华大学镜像）
+# 使用阿里云镜像源加速下载（针对bullseye版本）
 # 首先检查 sources.list 文件是否存在，如果存在则替换镜像源
 RUN if [ -f /etc/apt/sources.list ]; then \
-        sed -i 's|http://deb.debian.org|https://mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list && \
-        sed -i 's|http://security.debian.org|https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list; \
+        sed -i 's|http://deb.debian.org|https://mirrors.aliyun.com|g' /etc/apt/sources.list && \
+        sed -i 's|http://security.debian.org|https://mirrors.aliyun.com/debian-security|g' /etc/apt/sources.list; \
     else \
         # 对于 slim 镜像，可能需要创建 sources.list
-        echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm main" > /etc/apt/sources.list && \
-        echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-updates main" >> /etc/apt/sources.list && \
-        echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian-security bookworm-security main" >> /etc/apt/sources.list; \
+        echo "deb https://mirrors.aliyun.com/debian/ bullseye main" > /etc/apt/sources.list && \
+        echo "deb https://mirrors.aliyun.com/debian/ bullseye-updates main" >> /etc/apt/sources.list && \
+        echo "deb https://mirrors.aliyun.com/debian-security bullseye-security main" >> /etc/apt/sources.list; \
     fi
 
 # 安装常用开发工具
@@ -43,6 +43,7 @@ RUN apt-get update && apt-get install -y \
     jq \
     ssh \
     sudo \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # 设置时区
